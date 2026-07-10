@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, DownloadSimple, ImageSquare } from "@phosphor-icons/react";
 import { ControlPanel } from "./ControlPanel";
 import { CoverCanvas } from "./CoverCanvas";
+import { StyledSelect } from "./StyledSelect";
 import { defaultCoverState } from "../lib/defaults";
 import { exportCover } from "../lib/exportCover";
 import { exportFormatOptions } from "../lib/exportFormat";
@@ -99,17 +100,12 @@ export function EditorShell() {
           <span className="canvas-spec">16:9 · 1600 × 900</span>
           <label className="format-picker">
             <span>格式</span>
-            <select
-              aria-label="导出格式"
+            <StyledSelect
+              ariaLabel="导出格式"
               value={state.exportFormat}
-              onChange={(event) => updateState({ exportFormat: event.target.value as CoverState["exportFormat"] })}
-            >
-              {exportFormatOptions.map((format) => (
-                <option key={format.value} value={format.value}>
-                  {format.label}
-                </option>
-              ))}
-            </select>
+              options={exportFormatOptions}
+              onChange={(value) => updateState({ exportFormat: value as CoverState["exportFormat"] })}
+            />
           </label>
           <button className="export-button" type="button" onClick={handleExport} disabled={isExporting}>
             <DownloadSimple size={18} weight="bold" />

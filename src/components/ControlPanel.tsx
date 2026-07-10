@@ -8,6 +8,7 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react";
 import { localFontOptions } from "../lib/defaults";
+import { StyledSelect } from "./StyledSelect";
 import type { CoverState, LocalFont } from "../types";
 
 type ControlPanelProps = {
@@ -131,18 +132,15 @@ export function ControlPanel({
         </div>
         <label className="text-field">
           <span>字体类型</span>
-          <select value={state.fontFamily} onChange={(event) => onChange({ fontFamily: event.target.value })}>
-            {localFontOptions.map((font) => (
-              <option key={font.value} value={font.value}>
-                {font.label}
-              </option>
-            ))}
-            {localFonts.map((font) => (
-              <option key={font.family} value={font.family}>
-                本地字体：{font.fileName}
-              </option>
-            ))}
-          </select>
+          <StyledSelect
+            ariaLabel="字体类型"
+            value={state.fontFamily}
+            options={[
+              ...localFontOptions,
+              ...localFonts.map((font) => ({ value: font.family, label: `本地字体：${font.fileName}` })),
+            ]}
+            onChange={(value) => onChange({ fontFamily: value })}
+          />
         </label>
         <input
           ref={fontInputRef}
