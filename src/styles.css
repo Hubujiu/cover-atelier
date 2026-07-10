@@ -135,6 +135,28 @@ select:focus-visible {
   gap: 20px;
 }
 
+.format-picker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.format-picker select {
+  width: 82px;
+  min-height: 42px;
+  padding: 0 9px;
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--surface-raised);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .canvas-spec {
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -643,6 +665,18 @@ input[type="color"]::-webkit-color-swatch {
 
   .header-actions {
     flex: 0 0 auto;
+    gap: 8px;
+  }
+
+  .format-picker span {
+    display: none;
+  }
+
+  .format-picker select {
+    width: 70px;
+    min-height: 38px;
+    padding: 0 7px;
+    font-size: 10px;
   }
 
   .export-button {

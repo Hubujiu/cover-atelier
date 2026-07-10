@@ -13,6 +13,7 @@ export const defaultCoverState: CoverState = {
   stripOpacity: 0.3,
   blurAmount: 24,
   stripRadius: 24,
+  exportFormat: "png",
 };
 
 export const localFontOptions = [

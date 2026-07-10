@@ -4,6 +4,7 @@ import { ControlPanel } from "./ControlPanel";
 import { CoverCanvas } from "./CoverCanvas";
 import { defaultCoverState } from "../lib/defaults";
 import { exportCover } from "../lib/exportCover";
+import { exportFormatOptions } from "../lib/exportFormat";
 import { isSupportedImageFile } from "../lib/fileValidation";
 import { loadLocalFont } from "../lib/fontLoader";
 import type { CoverState, LocalFont } from "../types";
@@ -75,7 +76,7 @@ export function EditorShell() {
     try {
       await document.fonts.ready;
       await exportCover(state);
-      setNotice("PNG 已保存到本机下载目录");
+      setNotice(`${exportFormatOptions.find((format) => format.value === state.exportFormat)?.label ?? "图片"} 已保存到本机下载目录`);
     } catch (exportError) {
       setNotice(null);
       setError(exportError instanceof Error ? exportError.message : "导出失败，请重试。");
@@ -96,9 +97,23 @@ export function EditorShell() {
         </div>
         <div className="header-actions">
           <span className="canvas-spec">16:9 · 1600 × 900</span>
+          <label className="format-picker">
+            <span>格式</span>
+            <select
+              aria-label="导出格式"
+              value={state.exportFormat}
+              onChange={(event) => updateState({ exportFormat: event.target.value as CoverState["exportFormat"] })}
+            >
+              {exportFormatOptions.map((format) => (
+                <option key={format.value} value={format.value}>
+                  {format.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <button className="export-button" type="button" onClick={handleExport} disabled={isExporting}>
             <DownloadSimple size={18} weight="bold" />
-            {isExporting ? "生成中" : "导出 PNG"}
+            {isExporting ? "生成中" : `导出 ${exportFormatOptions.find((format) => format.value === state.exportFormat)?.label ?? "PNG"}`}
             <ArrowUpRight size={15} weight="bold" />
           </button>
         </div>

@@ -11,6 +11,7 @@ export type CoverState = {
   stripOpacity: number;
   blurAmount: number;
   stripRadius: number;
+  exportFormat: ExportFormat;
 };
 
 export type LocalFont = {
@@ -18,3 +19,5 @@ export type LocalFont = {
   objectUrl: string;
   fileName: string;
 };
+
+export type ExportFormat = "png" | "jpeg" | "webp" | "avif";

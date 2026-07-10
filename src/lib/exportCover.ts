@@ -1,4 +1,6 @@
 import { getCoverCrop, wrapText } from "./coverMath";
+import { getExportConfig } from "./exportFormat";
+import { encodeAvif } from "./avifEncoder";
 import type { CoverState } from "../types";
 
 const EXPORT_WIDTH = 1600;
@@ -156,6 +158,7 @@ function drawCenteredLines(
 }
 
 export async function exportCover(state: CoverState): Promise<void> {
+  const config = getExportConfig(state.exportFormat);
   const canvas = document.createElement("canvas");
   canvas.width = EXPORT_WIDTH;
   canvas.height = EXPORT_HEIGHT;
@@ -189,13 +192,18 @@ export async function exportCover(state: CoverState): Promise<void> {
     state.textColor,
   );
 
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
-  if (!blob) throw new Error("PNG 生成失败，请重试。");
+  const blob = state.exportFormat === "avif"
+    ? new Blob([new Uint8Array(await encodeAvif(ctx.getImageData(0, 0, EXPORT_WIDTH, EXPORT_HEIGHT), config.quality ?? 0.92))], { type: config.mimeType })
+    : await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, config.mimeType, config.quality));
+  if (!blob) throw new Error("图片生成失败，请重试。");
+  if (state.exportFormat !== "avif" && blob.type !== config.mimeType) {
+    throw new Error(`当前浏览器不支持 ${config.label} 导出，请选择其他格式。`);
+  }
 
   const downloadUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = downloadUrl;
-  link.download = `cover-atelier-${new Date().toISOString().slice(0, 10)}.png`;
+  link.download = `cover-atelier-${new Date().toISOString().slice(0, 10)}.${config.extension}`;
   document.body.appendChild(link);
   link.click();
   link.remove();
