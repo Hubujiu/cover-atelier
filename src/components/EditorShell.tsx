@@ -4,13 +4,9 @@ import { ControlPanel } from "./ControlPanel";
 import { CoverCanvas } from "./CoverCanvas";
 import { defaultCoverState } from "../lib/defaults";
 import { exportCover } from "../lib/exportCover";
+import { isSupportedImageFile } from "../lib/fileValidation";
 import { loadLocalFont } from "../lib/fontLoader";
 import type { CoverState, LocalFont } from "../types";
-
-function isSupportedImage(file: File): boolean {
-  const extension = file.name.split(".").pop()?.toLowerCase();
-  return ["png", "jpg", "jpeg", "webp"].includes(extension ?? "") || ["image/png", "image/jpeg", "image/webp"].includes(file.type);
-}
 
 export function EditorShell() {
   const [state, setState] = useState<CoverState>(defaultCoverState);
@@ -35,7 +31,7 @@ export function EditorShell() {
   }, []);
 
   const handleImageFile = useCallback((file: File) => {
-    if (!isSupportedImage(file)) {
+    if (!isSupportedImageFile(file)) {
       setError("图片格式不支持，请选择 PNG、JPG 或 WebP 文件。");
       return;
     }

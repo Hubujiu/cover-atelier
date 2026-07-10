@@ -86,7 +86,7 @@ export function ControlPanel({
           ref={imageInputRef}
           className="visually-hidden"
           type="file"
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/png,image/jpeg,image/webp,image/avif"
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) onImageFile(file);
@@ -97,7 +97,7 @@ export function ControlPanel({
           <UploadSimple size={18} weight="bold" />
           <span>{state.backgroundName ? "更换背景图片" : "上传背景图片"}</span>
         </button>
-        <p className="field-help">PNG、JPG 或 WebP。图片只会留在当前页面中。</p>
+        <p className="field-help">PNG、JPG、WebP 或 AVIF。图片只会留在当前页面中。</p>
         {state.backgroundName && <p className="file-name">{state.backgroundName}</p>}
       </section>
 
