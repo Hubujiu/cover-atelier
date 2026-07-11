@@ -5,6 +5,7 @@ dist/
 *.log
 .DS_Store
 .playwright-cli/
+.superpowers/
 output/
 *.tsbuildinfo
 vite.config.js
