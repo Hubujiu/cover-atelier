@@ -20,6 +20,15 @@ describe("ExportProgressModal", () => {
 
     expect(markup).toContain('role="dialog"');
     expect(markup).toContain('aria-modal="true"');
+    expect(markup).toContain('class="export-progress-backdrop"');
+    expect(markup).toContain('class="export-progress-modal"');
+    expect(markup).toContain('class="export-progress-header"');
+    expect(markup).toContain('class="export-progress-format"');
+    expect(markup).toContain('class="export-progress-file"');
+    expect(markup).toContain('class="export-progress-meta"');
+    expect(markup).toContain('class="export-progress-note"');
+    expect(markup).toContain('class="export-progress-track"');
+    expect(markup).toContain('class="export-progress-fill"');
     expect(markup).toContain("正在导出封面");
     expect(markup).toContain("AVIF");
     expect(markup).toContain("封面-完整文件名.avif");
