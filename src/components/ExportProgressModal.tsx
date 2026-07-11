@@ -31,6 +31,7 @@ export function ExportProgressModal({
         <div
           className="export-progress-track"
           role="progressbar"
+          aria-label="导出进度"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={progress.value}

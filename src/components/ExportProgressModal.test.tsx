@@ -36,6 +36,7 @@ describe("ExportProgressModal", () => {
     expect(markup).toContain("正在编码 AVIF");
     expect(markup).toContain("58%");
     expect(markup).toContain('role="progressbar"');
+    expect(markup).toContain('aria-label="导出进度"');
     expect(markup).toContain('aria-valuemin="0"');
     expect(markup).toContain('aria-valuemax="100"');
     expect(markup).toContain('aria-valuenow="58"');
