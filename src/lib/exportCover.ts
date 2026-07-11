@@ -1,5 +1,6 @@
 import { getCoverCrop, wrapText } from "./coverMath";
 import { getExportConfig } from "./exportFormat";
+import { getExportFilename } from "./exportFilename";
 import { encodeAvif } from "./avifEncoder";
 import type { CoverState } from "../types";
 
@@ -203,7 +204,7 @@ export async function exportCover(state: CoverState): Promise<void> {
   const downloadUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = downloadUrl;
-  link.download = `cover-atelier-${new Date().toISOString().slice(0, 10)}.${config.extension}`;
+  link.download = getExportFilename(state.title, config.extension);
   document.body.appendChild(link);
   link.click();
   link.remove();
