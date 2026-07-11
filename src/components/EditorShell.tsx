@@ -22,6 +22,7 @@ export function EditorShell() {
   const [exportProgress, setExportProgress] = useState<ExportProgress | null>(null);
   const [exportSnapshot, setExportSnapshot] = useState<CoverState | null>(null);
   const appContentRef = useRef<HTMLDivElement>(null);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
   const backgroundUrlRef = useRef<string | null>(null);
   const fontUrlsRef = useRef<string[]>([]);
 
@@ -106,6 +107,7 @@ export function EditorShell() {
       setExportProgress(null);
       setExportSnapshot(null);
       setIsExporting(false);
+      window.setTimeout(() => exportButtonRef.current?.focus(), 0);
     }
   }, [isExporting, state]);
 
@@ -132,7 +134,7 @@ export function EditorShell() {
               onChange={(value) => updateState({ exportFormat: value as CoverState["exportFormat"] })}
             />
           </label>
-          <button className="export-button" type="button" onClick={handleExport} disabled={isExporting}>
+          <button ref={exportButtonRef} className="export-button" type="button" onClick={handleExport} disabled={isExporting}>
             <DownloadSimple size={18} weight="bold" />
             {isExporting ? "生成中" : `导出 ${exportFormatOptions.find((format) => format.value === state.exportFormat)?.label ?? "PNG"}`}
             <ArrowUpRight size={15} weight="bold" />

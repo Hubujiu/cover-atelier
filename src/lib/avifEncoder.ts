@@ -2,6 +2,8 @@ type AvifWorkerResponse =
   | { type: "success"; buffer: ArrayBuffer }
   | { type: "error"; message: string };
 
+export const AVIF_ENCODE_TIMEOUT_MS = 120_000;
+
 export const AVIF_ENCODE_OPTIONS = {
   quality: 60,
   speed: 0,
@@ -21,7 +23,9 @@ export async function encodeAvif(
   };
 
   return new Promise<ArrayBuffer>((resolve, reject) => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const finish = (callback: () => void) => {
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
       worker.terminate();
       callback();
     };
@@ -36,6 +40,10 @@ export async function encodeAvif(
       finish(() => reject(new Error(response.message)));
     };
     worker.onerror = () => finish(() => reject(new Error("AVIF 编码失败，请重试。")));
+
+    timeoutId = setTimeout(() => {
+      finish(() => reject(new Error("AVIF 编码超时，请降低图片尺寸后重试。")));
+    }, AVIF_ENCODE_TIMEOUT_MS);
 
     worker.postMessage(
       {
