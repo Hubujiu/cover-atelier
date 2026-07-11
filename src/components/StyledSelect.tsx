@@ -12,6 +12,7 @@ type StyledSelectProps = {
   options: StyledSelectOption[];
   ariaLabel: string;
   className?: string;
+  disabled?: boolean;
   onChange: (value: string) => void;
 };
 
@@ -20,6 +21,7 @@ export function StyledSelect({
   options,
   ariaLabel,
   className = "",
+  disabled = false,
   onChange,
 }: StyledSelectProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,10 @@ export function StyledSelect({
   useEffect(() => {
     setActiveIndex(selectedIndex);
   }, [selectedIndex]);
+
+  useEffect(() => {
+    if (disabled) setIsOpen(false);
+  }, [disabled]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -94,6 +100,7 @@ export function StyledSelect({
       <button
         className="select-trigger"
         type="button"
+        disabled={disabled}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={isOpen}

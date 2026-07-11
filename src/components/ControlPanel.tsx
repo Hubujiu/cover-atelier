@@ -16,6 +16,7 @@ type ControlPanelProps = {
   localFonts: LocalFont[];
   error: string | null;
   notice: string | null;
+  disabled?: boolean;
   onChange: (patch: Partial<CoverState>) => void;
   onImageFile: (file: File) => void;
   onFontFile: (file: File) => void;
@@ -29,6 +30,7 @@ function RangeField({
   step = 1,
   displayValue,
   numberInput,
+  disabled = false,
   onChange,
 }: {
   label: string;
@@ -40,6 +42,7 @@ function RangeField({
   numberInput?: {
     ariaLabel: string;
   };
+  disabled?: boolean;
   onChange: (value: number) => void;
 }) {
   const handleNumberChange = (value: string) => {
@@ -64,6 +67,7 @@ function RangeField({
             max={max}
             step={step}
             value={value}
+            disabled={disabled}
             onChange={(event) => onChange(Number(event.target.value))}
           />
           <input
@@ -73,6 +77,7 @@ function RangeField({
             max={max}
             step={step}
             value={value}
+            disabled={disabled}
             aria-label={numberInput.ariaLabel}
             onChange={(event) => handleNumberChange(event.target.value)}
           />
@@ -84,6 +89,7 @@ function RangeField({
           max={max}
           step={step}
           value={value}
+          disabled={disabled}
           onChange={(event) => onChange(Number(event.target.value))}
         />
       )}
@@ -96,6 +102,7 @@ export function ControlPanel({
   localFonts,
   error,
   notice,
+  disabled = false,
   onChange,
   onImageFile,
   onFontFile,
@@ -122,6 +129,7 @@ export function ControlPanel({
           ref={imageInputRef}
           className="visually-hidden"
           type="file"
+          disabled={disabled}
           accept="image/png,image/jpeg,image/webp,image/avif"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -129,7 +137,7 @@ export function ControlPanel({
             event.target.value = "";
           }}
         />
-        <button className="upload-button" type="button" onClick={() => imageInputRef.current?.click()}>
+        <button className="upload-button" type="button" disabled={disabled} onClick={() => imageInputRef.current?.click()}>
           <UploadSimple size={18} weight="bold" />
           <span>{state.backgroundName ? "更换背景图片" : "上传背景图片"}</span>
         </button>
@@ -147,6 +155,7 @@ export function ControlPanel({
           <textarea
             value={state.title}
             rows={2}
+            disabled={disabled}
             onChange={(event) => onChange({ title: event.target.value })}
           />
         </label>
@@ -155,6 +164,7 @@ export function ControlPanel({
           <textarea
             value={state.subtitle}
             rows={2}
+            disabled={disabled}
             onChange={(event) => onChange({ subtitle: event.target.value })}
           />
         </label>
@@ -170,6 +180,7 @@ export function ControlPanel({
           <StyledSelect
             ariaLabel="字体类型"
             value={state.fontFamily}
+            disabled={disabled}
             options={[
               ...localFontOptions,
               ...localFonts.map((font) => ({ value: font.family, label: `本地字体：${font.fileName}` })),
@@ -181,6 +192,7 @@ export function ControlPanel({
           ref={fontInputRef}
           className="visually-hidden"
           type="file"
+          disabled={disabled}
           accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -188,7 +200,7 @@ export function ControlPanel({
             event.target.value = "";
           }}
         />
-        <button className="secondary-button" type="button" onClick={() => fontInputRef.current?.click()}>
+        <button className="secondary-button" type="button" disabled={disabled} onClick={() => fontInputRef.current?.click()}>
           <UploadSimple size={16} weight="bold" />
           上传本地字体
         </button>
@@ -199,12 +211,13 @@ export function ControlPanel({
             min={28}
             max={90}
             displayValue={`${state.fontSize}px`}
+            disabled={disabled}
             onChange={(value) => onChange({ fontSize: value })}
           />
           <label className="color-field">
             <span>文字颜色</span>
             <span className="color-control">
-              <input type="color" value={state.textColor} onChange={(event) => onChange({ textColor: event.target.value })} />
+              <input type="color" value={state.textColor} disabled={disabled} onChange={(event) => onChange({ textColor: event.target.value })} />
               <code>{state.textColor.toUpperCase()}</code>
             </span>
           </label>
@@ -222,6 +235,7 @@ export function ControlPanel({
           min={30}
           max={100}
           displayValue={`${state.stripWidth}%`}
+          disabled={disabled}
           numberInput={{ ariaLabel: "横条宽度数值" }}
           onChange={(value) => onChange({ stripWidth: value })}
         />
@@ -231,6 +245,7 @@ export function ControlPanel({
           min={25}
           max={75}
           displayValue={`${state.stripPositionY}%`}
+          disabled={disabled}
           onChange={(value) => onChange({ stripPositionY: value })}
         />
         <RangeField
@@ -239,6 +254,7 @@ export function ControlPanel({
           min={10}
           max={70}
           displayValue={`${Math.round(state.stripOpacity * 100)}%`}
+          disabled={disabled}
           onChange={(value) => onChange({ stripOpacity: value / 100 })}
         />
         <RangeField
@@ -247,6 +263,7 @@ export function ControlPanel({
           min={0}
           max={48}
           displayValue={`${state.blurAmount}px`}
+          disabled={disabled}
           onChange={(value) => onChange({ blurAmount: value })}
         />
         <RangeField
@@ -255,6 +272,7 @@ export function ControlPanel({
           min={10}
           max={42}
           displayValue={`${state.stripRadius}px`}
+          disabled={disabled}
           onChange={(value) => onChange({ stripRadius: value })}
         />
       </section>

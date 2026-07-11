@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { ExportProgress } from "../lib/exportProgress";
 
 type ExportProgressModalProps = {
@@ -11,12 +12,28 @@ export function ExportProgressModal({
   formatLabel,
   progress,
 }: ExportProgressModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, []);
+
+  const keepFocusInsideDialog = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      dialogRef.current?.focus();
+    }
+  };
+
   return (
     <div
       className="export-progress-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="export-progress-title"
+      tabIndex={-1}
+      ref={dialogRef}
+      onKeyDown={keepFocusInsideDialog}
     >
       <div className="export-progress-modal">
         <div className="export-progress-header">

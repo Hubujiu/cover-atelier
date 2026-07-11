@@ -46,6 +46,11 @@ button:disabled {
   opacity: 0.62;
 }
 
+[inert] {
+  pointer-events: none;
+  user-select: none;
+}
+
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
@@ -800,10 +805,12 @@ input[type="color"]::-webkit-color-swatch {
 
 .export-progress-file {
   margin: 10px 0 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
   color: var(--muted-strong);
   font-size: 12px;
   line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .export-progress-meta {
@@ -875,6 +882,18 @@ input[type="color"]::-webkit-color-swatch {
   .export-progress-fill::after {
     animation: none;
     transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .export-progress-backdrop {
+    background: rgba(4, 10, 15, 0.92);
+    backdrop-filter: none;
+  }
+
+  .export-progress-modal {
+    background: #172330;
+    backdrop-filter: none;
   }
 }
 

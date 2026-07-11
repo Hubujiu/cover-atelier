@@ -21,6 +21,7 @@ export function EditorShell() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState<ExportProgress | null>(null);
   const [exportSnapshot, setExportSnapshot] = useState<CoverState | null>(null);
+  const appContentRef = useRef<HTMLDivElement>(null);
   const backgroundUrlRef = useRef<string | null>(null);
   const fontUrlsRef = useRef<string[]>([]);
 
@@ -30,6 +31,17 @@ export function EditorShell() {
       fontUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     };
   }, []);
+
+  useEffect(() => {
+    const appContent = appContentRef.current;
+    if (!appContent) return;
+
+    if (isExporting) {
+      appContent.setAttribute("inert", "");
+    } else {
+      appContent.removeAttribute("inert");
+    }
+  }, [isExporting]);
 
   const updateState = useCallback((patch: Partial<CoverState>) => {
     setState((current) => ({ ...current, ...patch }));
@@ -99,6 +111,7 @@ export function EditorShell() {
 
   return (
     <div className="app-shell">
+      <div ref={appContentRef} aria-busy={isExporting}>
       <header className="app-header">
         <div className="brand-lockup">
           <div className="brand-mark">CA</div>
@@ -115,6 +128,7 @@ export function EditorShell() {
               ariaLabel="导出格式"
               value={state.exportFormat}
               options={exportFormatOptions}
+              disabled={isExporting}
               onChange={(value) => updateState({ exportFormat: value as CoverState["exportFormat"] })}
             />
           </label>
@@ -132,6 +146,7 @@ export function EditorShell() {
           localFonts={localFonts}
           error={error}
           notice={notice}
+          disabled={isExporting}
           onChange={updateState}
           onImageFile={handleImageFile}
           onFontFile={handleFontFile}
@@ -147,6 +162,7 @@ export function EditorShell() {
           <CoverCanvas state={state} />
         </section>
       </main>
+      </div>
       {exportProgress && exportSnapshot ? (
         <ExportProgressModal
           progress={exportProgress}

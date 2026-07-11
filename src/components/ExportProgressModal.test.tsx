@@ -20,6 +20,7 @@ describe("ExportProgressModal", () => {
 
     expect(markup).toContain('role="dialog"');
     expect(markup).toContain('aria-modal="true"');
+    expect(markup).toContain('tabindex="-1"');
     expect(markup).toContain('class="export-progress-backdrop"');
     expect(markup).toContain('class="export-progress-modal"');
     expect(markup).toContain('class="export-progress-header"');
