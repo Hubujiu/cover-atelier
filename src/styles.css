@@ -674,7 +674,7 @@ input[type="color"]::-webkit-color-swatch {
 
 .glass-copy {
   width: 100%;
-  color: var(--text);
+  color: var(--cover-text-color);
   font-family: var(--cover-font);
   text-align: center;
 }
@@ -694,10 +694,11 @@ input[type="color"]::-webkit-color-swatch {
 
 .glass-copy p {
   margin-top: clamp(10px, 1.4cqw, 22px);
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--cover-text-color);
   font-size: clamp(14px, 1.5cqw, 24px);
   font-weight: 500;
   line-height: 1.35;
+  opacity: 0.8;
 }
 
 .canvas-caption {
@@ -728,11 +729,12 @@ input[type="color"]::-webkit-color-swatch {
   }
 
   .glass-copy {
-    color: #1b2a31;
+    color: var(--cover-text-color);
   }
 
   .glass-copy p {
-    color: rgba(27, 42, 49, 0.72);
+    color: var(--cover-text-color);
+    opacity: 0.72;
   }
 }
 

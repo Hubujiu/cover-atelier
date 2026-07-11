@@ -8,6 +8,7 @@ type CoverCanvasProps = {
 export function CoverCanvas({ state }: CoverCanvasProps) {
   const style = {
     "--cover-font": state.fontFamily,
+    "--cover-text-color": state.textColor,
     "--strip-width": `${state.stripWidth}%`,
     "--strip-y": `${state.stripPositionY}%`,
     "--strip-opacity": state.stripOpacity,
