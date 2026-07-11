@@ -11,4 +11,12 @@ describe("CoverCanvas", () => {
 
     expect(markup).toContain("--cover-text-color:#ff0000");
   });
+
+  it("maps the selected font size to the responsive preview scale", () => {
+    const markup = renderToStaticMarkup(
+      <CoverCanvas state={{ ...defaultCoverState, fontSize: 64 }} />,
+    );
+
+    expect(markup).toContain("--cover-font-size:4cqw");
+  });
 });

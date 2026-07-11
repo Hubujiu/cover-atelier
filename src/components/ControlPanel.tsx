@@ -28,6 +28,7 @@ function RangeField({
   max,
   step = 1,
   displayValue,
+  numberInput,
   onChange,
 }: {
   label: string;
@@ -36,22 +37,56 @@ function RangeField({
   max: number;
   step?: number;
   displayValue: string;
+  numberInput?: {
+    ariaLabel: string;
+  };
   onChange: (value: number) => void;
 }) {
+  const handleNumberChange = (value: string) => {
+    if (value === "") return;
+    const nextValue = Number(value);
+    if (Number.isFinite(nextValue)) {
+      onChange(Math.min(max, Math.max(min, nextValue)));
+    }
+  };
+
   return (
     <label className="range-field">
       <span className="field-label-row">
         <span>{label}</span>
         <output>{displayValue}</output>
       </span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-      />
+      {numberInput ? (
+        <span className="range-control">
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            onChange={(event) => onChange(Number(event.target.value))}
+          />
+          <input
+            className="range-number"
+            type="number"
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            aria-label={numberInput.ariaLabel}
+            onChange={(event) => handleNumberChange(event.target.value)}
+          />
+        </span>
+      ) : (
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+        />
+      )}
     </label>
   );
 }
@@ -184,9 +219,10 @@ export function ControlPanel({
         <RangeField
           label="横条宽度"
           value={state.stripWidth}
-          min={52}
-          max={92}
+          min={30}
+          max={100}
           displayValue={`${state.stripWidth}%`}
+          numberInput={{ ariaLabel: "横条宽度数值" }}
           onChange={(value) => onChange({ stripWidth: value })}
         />
         <RangeField

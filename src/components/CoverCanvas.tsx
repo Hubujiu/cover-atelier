@@ -6,8 +6,11 @@ type CoverCanvasProps = {
 };
 
 export function CoverCanvas({ state }: CoverCanvasProps) {
+  const subtitleSize = Math.max(18, Math.round(state.fontSize * 0.43));
   const style = {
     "--cover-font": state.fontFamily,
+    "--cover-font-size": `${state.fontSize / 16}cqw`,
+    "--cover-subtitle-size": `${subtitleSize / 16}cqw`,
     "--cover-text-color": state.textColor,
     "--strip-width": `${state.stripWidth}%`,
     "--strip-y": `${state.stripPositionY}%`,
