@@ -6,6 +6,10 @@ describe("export format configuration", () => {
     expect(getExportConfig("png")).toEqual({ label: "PNG", mimeType: "image/png", extension: "png" });
     expect(getExportConfig("jpeg")).toEqual({ label: "JPEG", mimeType: "image/jpeg", extension: "jpg", quality: 0.92 });
     expect(getExportConfig("webp")).toEqual({ label: "WebP", mimeType: "image/webp", extension: "webp", quality: 0.92 });
-    expect(getExportConfig("avif")).toEqual({ label: "AVIF", mimeType: "image/avif", extension: "avif", quality: 0.92 });
+    expect(getExportConfig("avif")).toEqual({ label: "AVIF", mimeType: "image/avif", extension: "avif", quality: 0.6 });
+  });
+
+  it("uses quality 60 for AVIF exports", () => {
+    expect(getExportConfig("avif").quality).toBe(0.6);
   });
 });

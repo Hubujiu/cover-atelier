@@ -21,7 +21,7 @@ export function getExportConfig(format: ExportFormat): ExportConfig {
     case "webp":
       return { label: "WebP", mimeType: "image/webp", extension: "webp", quality: 0.92 };
     case "avif":
-      return { label: "AVIF", mimeType: "image/avif", extension: "avif", quality: 0.92 };
+      return { label: "AVIF", mimeType: "image/avif", extension: "avif", quality: 0.6 };
     case "png":
     default:
       return { label: "PNG", mimeType: "image/png", extension: "png" };
