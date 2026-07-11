@@ -6,8 +6,7 @@ import { ExportProgressModal } from "./ExportProgressModal";
 import { StyledSelect } from "./StyledSelect";
 import { defaultCoverState } from "../lib/defaults";
 import { exportCover } from "../lib/exportCover";
-import { exportFormatOptions } from "../lib/exportFormat";
-import { getExportConfig } from "../lib/exportFormat";
+import { exportFormatOptions, getExportConfig } from "../lib/exportFormat";
 import { getExportFilename } from "../lib/exportFilename";
 import { isSupportedImageFile } from "../lib/fileValidation";
 import { loadLocalFont } from "../lib/fontLoader";
@@ -21,9 +20,9 @@ export function EditorShell() {
   const [notice, setNotice] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState<ExportProgress | null>(null);
+  const [exportSnapshot, setExportSnapshot] = useState<CoverState | null>(null);
   const backgroundUrlRef = useRef<string | null>(null);
   const fontUrlsRef = useRef<string[]>([]);
-  const config = getExportConfig(state.exportFormat);
 
   useEffect(() => {
     return () => {
@@ -77,19 +76,23 @@ export function EditorShell() {
 
   const handleExport = useCallback(async () => {
     if (isExporting) return;
+    const exportSnapshot = state;
+    const exportConfig = getExportConfig(exportSnapshot.exportFormat);
     setIsExporting(true);
+    setExportSnapshot(exportSnapshot);
     setError(null);
-    setExportProgress({ value: 0, label: "准备字体" });
-    setNotice("正在生成 PNG...");
+    setExportProgress({ value: 0, label: "准备画布" });
+    setNotice(`正在生成 ${exportConfig.label}...`);
     try {
       await document.fonts.ready;
-      await exportCover(state, setExportProgress);
-      setNotice(`${exportFormatOptions.find((format) => format.value === state.exportFormat)?.label ?? "图片"} 已保存到本机下载目录`);
+      await exportCover(exportSnapshot, setExportProgress);
+      setNotice(`${exportConfig.label} 已保存到本机下载目录`);
     } catch (exportError) {
       setNotice(null);
       setError(exportError instanceof Error ? exportError.message : "导出失败，请重试。");
     } finally {
       setExportProgress(null);
+      setExportSnapshot(null);
       setIsExporting(false);
     }
   }, [isExporting, state]);
@@ -144,11 +147,11 @@ export function EditorShell() {
           <CoverCanvas state={state} />
         </section>
       </main>
-      {exportProgress ? (
+      {exportProgress && exportSnapshot ? (
         <ExportProgressModal
           progress={exportProgress}
-          fileName={getExportFilename(state.title, config.extension)}
-          formatLabel={config.label}
+          fileName={getExportFilename(exportSnapshot.title, getExportConfig(exportSnapshot.exportFormat).extension)}
+          formatLabel={getExportConfig(exportSnapshot.exportFormat).label}
         />
       ) : null}
     </div>
