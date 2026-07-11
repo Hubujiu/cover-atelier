@@ -213,10 +213,10 @@ export async function exportCover(
     ? new Blob([new Uint8Array(await encodeAvif(ctx.getImageData(0, 0, EXPORT_WIDTH, EXPORT_HEIGHT), config.quality ?? 0.92))], { type: config.mimeType })
     : await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, config.mimeType, config.quality));
   if (!blob) throw new Error("图片生成失败，请重试。");
-  report("download");
   if (state.exportFormat !== "avif" && blob.type !== config.mimeType) {
     throw new Error(`当前浏览器不支持 ${config.label} 导出，请选择其他格式。`);
   }
+  report("download");
 
   const downloadUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
