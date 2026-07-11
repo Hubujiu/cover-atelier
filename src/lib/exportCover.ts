@@ -2,6 +2,8 @@ import { getCoverCrop, wrapText } from "./coverMath";
 import { getExportConfig } from "./exportFormat";
 import { getExportFilename } from "./exportFilename";
 import { encodeAvif } from "./avifEncoder";
+import { getExportProgressStages } from "./exportProgress";
+import type { ExportProgress, ExportProgressStage } from "./exportProgress";
 import type { CoverState } from "../types";
 
 const EXPORT_WIDTH = 1600;
@@ -158,15 +160,27 @@ function drawCenteredLines(
   return lines.length * lineHeight;
 }
 
-export async function exportCover(state: CoverState): Promise<void> {
+export async function exportCover(
+  state: CoverState,
+  onProgress: (progress: ExportProgress) => void = () => undefined,
+): Promise<void> {
   const config = getExportConfig(state.exportFormat);
+  const stages = getExportProgressStages(config.label, Boolean(state.backgroundUrl));
+  const report = (key: ExportProgressStage["key"]): void => {
+    const stage = stages.find((candidate) => candidate.key === key);
+    if (stage) onProgress({ value: stage.value, label: stage.label });
+  };
+
   const canvas = document.createElement("canvas");
   canvas.width = EXPORT_WIDTH;
   canvas.height = EXPORT_HEIGHT;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("当前浏览器无法创建导出画布。");
 
-  const image = state.backgroundUrl ? await loadImage(state.backgroundUrl) : null;
+  report("prepare");
+  const image = state.backgroundUrl
+    ? (report("load-image"), await loadImage(state.backgroundUrl))
+    : null;
   drawBackground(ctx, image);
   const rect = drawGlassStrip(ctx, state, image);
   const centerX = rect.x + rect.width / 2;
@@ -193,10 +207,13 @@ export async function exportCover(state: CoverState): Promise<void> {
     state.textColor,
   );
 
+  report("draw");
+  report("encode");
   const blob = state.exportFormat === "avif"
     ? new Blob([new Uint8Array(await encodeAvif(ctx.getImageData(0, 0, EXPORT_WIDTH, EXPORT_HEIGHT), config.quality ?? 0.92))], { type: config.mimeType })
     : await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, config.mimeType, config.quality));
   if (!blob) throw new Error("图片生成失败，请重试。");
+  report("download");
   if (state.exportFormat !== "avif" && blob.type !== config.mimeType) {
     throw new Error(`当前浏览器不支持 ${config.label} 导出，请选择其他格式。`);
   }
@@ -209,4 +226,5 @@ export async function exportCover(state: CoverState): Promise<void> {
   link.click();
   link.remove();
   URL.revokeObjectURL(downloadUrl);
+  report("complete");
 }

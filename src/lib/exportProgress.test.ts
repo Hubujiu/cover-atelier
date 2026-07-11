@@ -14,4 +14,20 @@ describe("export progress stages", () => {
 
     expect(stages.map((stage) => stage.value)).toEqual([0, 25, 58, 92, 100]);
   });
+
+  it("provides valid keys and non-empty labels for every stage", () => {
+    const validKeys = new Set([
+      "prepare",
+      "load-image",
+      "draw",
+      "encode",
+      "download",
+      "complete",
+    ]);
+
+    for (const stage of getExportProgressStages("WebP", true)) {
+      expect(validKeys.has(stage.key)).toBe(true);
+      expect(stage.label.trim()).not.toBe("");
+    }
+  });
 });
