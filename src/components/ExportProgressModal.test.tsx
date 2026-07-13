@@ -8,6 +8,7 @@ describe("ExportProgressModal", () => {
     const progress: ExportProgress = {
       value: 58,
       label: "正在编码 AVIF",
+      estimate: { minSeconds: 30, maxSeconds: 100 },
     };
 
     const markup = renderToStaticMarkup(
@@ -15,6 +16,8 @@ describe("ExportProgressModal", () => {
         fileName="封面-完整文件名.avif"
         formatLabel="AVIF"
         progress={progress}
+        showTiming
+        onCancel={() => undefined}
       />,
     );
 
@@ -35,6 +38,10 @@ describe("ExportProgressModal", () => {
     expect(markup).toContain("封面-完整文件名.avif");
     expect(markup).toContain('title="封面-完整文件名.avif"');
     expect(markup).toContain("正在编码 AVIF");
+    expect(markup).toContain("预计约 30 秒～1 分 40 秒");
+    expect(markup).toContain("已用时间 0 秒");
+    expect(markup).toContain("取消导出");
+    expect(markup).toContain('type="button"');
     expect(markup).toContain("58%");
     expect(markup).toContain('role="progressbar"');
     expect(markup).toContain('aria-label="导出进度"');
@@ -42,5 +49,20 @@ describe("ExportProgressModal", () => {
     expect(markup).toContain('aria-valuemax="100"');
     expect(markup).toContain('aria-valuenow="58"');
     expect(markup).toContain("width:58%");
+  });
+
+  it("does not show AVIF timing controls for other export formats", () => {
+    const markup = renderToStaticMarkup(
+      <ExportProgressModal
+        fileName="封面.png"
+        formatLabel="PNG"
+        progress={{ value: 58, label: "正在编码 PNG" }}
+      />,
+    );
+
+    expect(markup).not.toContain("小样本测速");
+    expect(markup).not.toContain("预计");
+    expect(markup).not.toContain("已用时间");
+    expect(markup).not.toContain("取消导出");
   });
 });

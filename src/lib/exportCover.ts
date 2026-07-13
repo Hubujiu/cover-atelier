@@ -163,6 +163,7 @@ function drawCenteredLines(
 export async function exportCover(
   state: CoverState,
   onProgress: (progress: ExportProgress) => void = () => undefined,
+  options: { signal?: AbortSignal } = {},
 ): Promise<void> {
   const config = getExportConfig(state.exportFormat);
   const stages = getExportProgressStages(config.label, Boolean(state.backgroundUrl));
@@ -210,7 +211,18 @@ export async function exportCover(
   report("draw");
   report("encode");
   const blob = state.exportFormat === "avif"
-    ? new Blob([new Uint8Array(await encodeAvif(ctx.getImageData(0, 0, EXPORT_WIDTH, EXPORT_HEIGHT), config.quality ?? 0.92))], { type: config.mimeType })
+    ? new Blob([new Uint8Array(await encodeAvif(
+      ctx.getImageData(0, 0, EXPORT_WIDTH, EXPORT_HEIGHT),
+      config.quality ?? 0.92,
+      {
+        signal: options.signal,
+        onEstimate: (estimate) => onProgress({
+          value: 58,
+          label: "正在编码 AVIF",
+          estimate,
+        }),
+      },
+    ))], { type: config.mimeType })
     : await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, config.mimeType, config.quality));
   if (!blob) throw new Error("图片生成失败，请重试。");
   if (state.exportFormat !== "avif" && blob.type !== config.mimeType) {

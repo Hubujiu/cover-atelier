@@ -867,6 +867,47 @@ input[type="color"]::-webkit-color-swatch {
   animation: export-progress-shimmer 1.8s ease-in-out infinite;
 }
 
+.export-progress-timing {
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.export-progress-timing p {
+  margin: 0;
+}
+
+.export-progress-timing p:first-child {
+  color: var(--muted-strong);
+}
+
+.export-cancel-button {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--muted-strong);
+  background: rgba(224, 235, 240, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.export-cancel-button:hover {
+  border-color: rgba(223, 139, 115, 0.55);
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
 @keyframes export-progress-shimmer {
   from {
     transform: translateX(-100%);

@@ -23,11 +23,13 @@ export function EditorShell() {
   const [exportSnapshot, setExportSnapshot] = useState<CoverState | null>(null);
   const appContentRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
+  const exportAbortControllerRef = useRef<AbortController | null>(null);
   const backgroundUrlRef = useRef<string | null>(null);
   const fontUrlsRef = useRef<string[]>([]);
 
   useEffect(() => {
     return () => {
+      exportAbortControllerRef.current?.abort();
       if (backgroundUrlRef.current) URL.revokeObjectURL(backgroundUrlRef.current);
       fontUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     };
@@ -91,6 +93,8 @@ export function EditorShell() {
     if (isExporting) return;
     const exportSnapshot = state;
     const exportConfig = getExportConfig(exportSnapshot.exportFormat);
+    const abortController = new AbortController();
+    exportAbortControllerRef.current = abortController;
     setIsExporting(true);
     setExportSnapshot(exportSnapshot);
     setError(null);
@@ -98,18 +102,30 @@ export function EditorShell() {
     setNotice(`正在生成 ${exportConfig.label}...`);
     try {
       await document.fonts.ready;
-      await exportCover(exportSnapshot, setExportProgress);
+      await exportCover(exportSnapshot, setExportProgress, { signal: abortController.signal });
       setNotice(`${exportConfig.label} 已保存到本机下载目录`);
     } catch (exportError) {
-      setNotice(null);
-      setError(exportError instanceof Error ? exportError.message : "导出失败，请重试。");
+      if (exportError instanceof Error && exportError.name === "AbortError") {
+        setError(null);
+        setNotice(`已取消 ${exportConfig.label} 导出`);
+      } else {
+        setNotice(null);
+        setError(exportError instanceof Error ? exportError.message : "导出失败，请重试。");
+      }
     } finally {
+      if (exportAbortControllerRef.current === abortController) {
+        exportAbortControllerRef.current = null;
+      }
       setExportProgress(null);
       setExportSnapshot(null);
       setIsExporting(false);
       window.setTimeout(() => exportButtonRef.current?.focus(), 0);
     }
   }, [isExporting, state]);
+
+  const handleCancelExport = useCallback(() => {
+    exportAbortControllerRef.current?.abort();
+  }, []);
 
   return (
     <div className="app-shell">
@@ -170,6 +186,8 @@ export function EditorShell() {
           progress={exportProgress}
           fileName={getExportFilename(exportSnapshot.title, getExportConfig(exportSnapshot.exportFormat).extension)}
           formatLabel={getExportConfig(exportSnapshot.exportFormat).label}
+          showTiming={exportSnapshot.exportFormat === "avif"}
+          onCancel={exportSnapshot.exportFormat === "avif" ? handleCancelExport : undefined}
         />
       ) : null}
     </div>

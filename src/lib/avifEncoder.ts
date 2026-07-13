@@ -1,8 +1,13 @@
+import {
+  createAvifCalibrationImageData,
+  estimateAvifDuration,
+} from "./avifEstimate";
+import type { AvifDurationEstimate } from "./avifEstimate";
+
 type AvifWorkerResponse =
   | { type: "success"; buffer: ArrayBuffer }
+  | { type: "estimate"; calibrationMs: number }
   | { type: "error"; message: string };
-
-export const AVIF_ENCODE_TIMEOUT_MS = 120_000;
 
 export const AVIF_ENCODE_OPTIONS = {
   quality: 60,
@@ -11,11 +16,26 @@ export const AVIF_ENCODE_OPTIONS = {
   subsample: 3,
 } as const;
 
+type EncodeAvifRuntimeOptions = {
+  signal?: AbortSignal;
+  onEstimate?: (estimate: AvifDurationEstimate) => void;
+};
+
+function createAbortError(): Error {
+  const error = new Error("AVIF 导出已取消。");
+  error.name = "AbortError";
+  return error;
+}
+
 export async function encodeAvif(
   imageData: ImageData,
   quality = AVIF_ENCODE_OPTIONS.quality / 100,
+  runtimeOptions: EncodeAvifRuntimeOptions = {},
 ): Promise<ArrayBuffer> {
+  if (runtimeOptions.signal?.aborted) throw createAbortError();
+
   const worker = new Worker(new URL("../workers/avifEncoder.worker.ts", import.meta.url), { type: "module" });
+  const calibrationImageData = createAvifCalibrationImageData(imageData);
   const options = {
     quality: Math.round(quality * 100),
     speed: AVIF_ENCODE_OPTIONS.speed,
@@ -23,15 +43,28 @@ export async function encodeAvif(
   };
 
   return new Promise<ArrayBuffer>((resolve, reject) => {
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let settled = false;
     const finish = (callback: () => void) => {
-      if (timeoutId !== undefined) clearTimeout(timeoutId);
+      if (settled) return;
+      settled = true;
+      runtimeOptions.signal?.removeEventListener("abort", handleAbort);
       worker.terminate();
       callback();
     };
 
+    const handleAbort = () => finish(() => reject(createAbortError()));
+
     worker.onmessage = (event: MessageEvent<AvifWorkerResponse>) => {
       const response = event.data;
+      if (response.type === "estimate") {
+        runtimeOptions.onEstimate?.(estimateAvifDuration(
+          response.calibrationMs,
+          calibrationImageData.width * calibrationImageData.height,
+          imageData.width * imageData.height,
+        ));
+        return;
+      }
+
       if (response.type === "success") {
         finish(() => resolve(response.buffer));
         return;
@@ -41,9 +74,7 @@ export async function encodeAvif(
     };
     worker.onerror = () => finish(() => reject(new Error("AVIF 编码失败，请重试。")));
 
-    timeoutId = setTimeout(() => {
-      finish(() => reject(new Error("AVIF 编码超时，请降低图片尺寸后重试。")));
-    }, AVIF_ENCODE_TIMEOUT_MS);
+    runtimeOptions.signal?.addEventListener("abort", handleAbort, { once: true });
 
     worker.postMessage(
       {
@@ -52,9 +83,14 @@ export async function encodeAvif(
           width: imageData.width,
           height: imageData.height,
         },
+        calibrationImageData: {
+          data: calibrationImageData.data.buffer,
+          width: calibrationImageData.width,
+          height: calibrationImageData.height,
+        },
         options,
       },
-      [imageData.data.buffer],
+      [imageData.data.buffer, calibrationImageData.data.buffer],
     );
   });
 }
