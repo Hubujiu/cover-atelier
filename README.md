@@ -39,8 +39,6 @@ npm test
 npm run build
 ```
 
-See the [design specification](./docs/superpowers/specs/2026-07-10-cover-atelier-design.md) and [implementation plan](./docs/superpowers/plans/2026-07-10-cover-atelier.md) for project details.
-
 ## Roadmap
 
 - Cover presets

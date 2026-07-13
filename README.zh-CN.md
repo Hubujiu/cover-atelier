@@ -39,8 +39,6 @@ npm test
 npm run build
 ```
 
-项目详情请参阅[设计规范](./docs/superpowers/specs/2026-07-10-cover-atelier-design.md)和[实施计划](./docs/superpowers/plans/2026-07-10-cover-atelier.md)。
-
 ## 路线图
 
 - 封面预设
