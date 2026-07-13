@@ -1,42 +1,53 @@
+<div align="center">
+
 # Cover Atelier
 
-一个完全离线的博客文章封面编辑器。
+**A privacy-first blog cover maker that runs entirely in your browser.**
 
-它支持：
+[Live Demo](https://hubujiu.github.io/cover-atelier/) · [中文说明](./README.zh-CN.md) · [Star the project](https://github.com/Hubujiu/cover-atelier)
 
-- 上传本地 PNG、JPG、WebP 或 AVIF 背景图
-- 编辑标题和副标题
-- 选择系统字体或上传本地 TTF、OTF、WOFF 字体
-- 调整玻璃横条的宽度、位置、透明度、模糊和圆角
-- 在浏览器本地导出 1600 × 900 PNG、JPEG、WebP 或 AVIF
+</div>
 
-## 开始使用
+![Cover Atelier editor showing a glassmorphism blog cover preview](./docs/assets/cover-atelier-editor.png)
 
-需要 Node.js 18 或更高版本。
+## Highlights
+
+- **Local by design.** Selected images and fonts remain in the current browser session.
+- **Live editing.** Changes to the title, subtitle, typography, color, and glass strip immediately update the preview.
+- **Local fonts.** Use installed system fonts or load TTF, OTF, WOFF, and WOFF2 files.
+- **Flexible export.** Save a 1600 × 900 cover as PNG, JPEG, WebP, or AVIF.
+
+## Workflow
+
+1. Open the [live demo](https://hubujiu.github.io/cover-atelier/).
+2. Choose a background and edit the cover.
+3. Export the finished image in your preferred format.
+
+## Privacy
+
+Cover Atelier has no application backend and does not intentionally upload your selected image or font. These files remain in the current page session and are discarded when you refresh or close the page.
+
+## Development
 
 ```powershell
 npm install
 npm run dev
 ```
 
-然后打开终端显示的本地地址。
-
-## 构建离线版本
-
-```powershell
-npm run build
-npm run preview
-```
-
-构建产物位于 `dist/`。页面运行时不请求外部图片、字体服务、后端接口或云存储。背景图和字体只存在于当前浏览器页面内存中，导出的 PNG 由本机 Canvas 生成。
-
-AVIF 导出使用随项目打包的本地 WebAssembly 编码器，不依赖浏览器原生 AVIF Canvas 支持。
-
-## 检查
-
 ```powershell
 npm test
 npm run build
 ```
 
-设计说明位于 `docs/superpowers/specs/2026-07-10-cover-atelier-design.md`，实施计划位于 `docs/superpowers/plans/2026-07-10-cover-atelier.md`。
+See the [design specification](./docs/superpowers/specs/2026-07-10-cover-atelier-design.md) and [implementation plan](./docs/superpowers/plans/2026-07-10-cover-atelier.md) for project details.
+
+## Roadmap
+
+- Cover presets
+- Common platform dimensions
+- Automatic color suggestions
+- Installable offline/PWA support
+
+## License
+
+[MIT](./LICENSE) © 2026 Hubujiu
